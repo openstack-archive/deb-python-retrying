@@ -1,0 +1,53 @@
+Source: python-retrying
+Section: python
+Priority: optional
+Maintainer: PKG OpenStack <openstack-devel@lists.alioth.debian.org>
+Uploaders: Julien Danjou <acid@debian.org>,
+           Thomas Goirand <zigo@debian.org>,
+           Mehdi Abaakouk <sileht@sileht.net>,
+           Gonéri Le Bouder <goneri@debian.org>
+Build-Depends: debhelper (>= 9),
+               python-all (>= 2.6.6-3~),
+               python-setuptools,
+               python3-all,
+               python3-setuptools
+Standards-Version: 3.9.5
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=openstack/python-retrying.git
+Vcs-Git: git://anonscm.debian.org/openstack/python-retrying.git
+Homepage: https://github.com/rholder/retrying
+
+Package: python-retrying
+Architecture: all
+Pre-Depends: dpkg (>= 1.15.6~)
+Depends: ${misc:Depends}, ${python:Depends}
+Description: simplifies the task of adding retry behavior - Python 2.x
+ Retrying is an Apache 2.0 licensed general-purpose retrying library, written
+ in Python, to simplify the task of adding retry behavior to just about
+ anything.
+ .
+ Features:
+  * Generic Decorator API
+  * Specify stop condition (limit by number of attempts)
+  * Specify wait condition (exponential backoff sleeping between attempts)
+  * Customize retrying on Exceptions
+  * Customize retrying on expected returned result
+ .
+ This package contains the Python 2.x module.
+
+Package: python3-retrying
+Architecture: all
+Pre-Depends: dpkg (>= 1.15.6~)
+Depends: ${misc:Depends}, ${python3:Depends}
+Description: simplifies the task of adding retry behavior - Python 3.x
+ Retrying is an Apache 2.0 licensed general-purpose retrying library, written
+ in Python, to simplify the task of adding retry behavior to just about
+ anything.
+ .
+ Features:
+  * Generic Decorator API
+  * Specify stop condition (limit by number of attempts)
+  * Specify wait condition (exponential backoff sleeping between attempts)
+  * Customize retrying on Exceptions
+  * Customize retrying on expected returned result
+ .
+ This package contains the Python 3.x module.

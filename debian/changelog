@@ -1,0 +1,5 @@
+python-retrying (1.2.1-1) unstable; urgency=medium
+
+  * Initial release. (Closes: #752619)
+
+ -- Thomas Goirand <zigo@debian.org>  Wed, 25 Jun 2014 15:50:41 +0800
