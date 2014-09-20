@@ -19,6 +19,10 @@ override_dh_install:
 			--root $(CURDIR)/debian/python3-retrying; \
 	done
 
+override_dh_clean:
+	dh_clean -O--buildsystem=python_distutils
+	rm -rf build
+
 override_dh_auto_test:
 ifeq (,$(findstring nocheck, $(DEB_BUILD_OPTIONS)))
 	set -e && for pyvers in $(PYTHONS) $(PYTHON3S); do \
