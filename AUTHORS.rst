@@ -15,3 +15,7 @@ Patches and Suggestions
 - Justin Turner Arthur
 - J Derek Wilson
 - Alex Kuang
+- Simon Dollé
+- Rees Dooley
+- Saul Shanabrook
+- Daniel Nephin

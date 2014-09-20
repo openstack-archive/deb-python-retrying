@@ -69,9 +69,12 @@ else:
 # sys.maxint / 2, since Python 3.2 doesn't have a sys.maxint...
 MAX_WAIT = 1073741823
 
+
 def retry(*dargs, **dkw):
     """
-    TODO comment
+    Decorator function that instantiates the Retrying object
+    @param *dargs: positional arguments passed to Retrying object
+    @param **dkw: keyword arguments passed to the Retrying object
     """
     # support both @retry and @retry() as valid syntax
     if len(dargs) == 1 and callable(dargs[0]):
@@ -105,7 +108,9 @@ class Retrying(object):
                  wait_exponential_multiplier=None, wait_exponential_max=None,
                  retry_on_exception=None,
                  retry_on_result=None,
-                 wrap_exception=False):
+                 wrap_exception=False,
+                 stop_func=None,
+                 wait_func=None):
 
         self._stop_max_attempt_number = 5 if stop_max_attempt_number is None else stop_max_attempt_number
         self._stop_max_delay = 100 if stop_max_delay is None else stop_max_delay
@@ -126,7 +131,10 @@ class Retrying(object):
         if stop_max_delay is not None:
             stop_funcs.append(self.stop_after_delay)
 
-        if stop is None:
+        if stop_func is not None:
+            self.stop = stop_func
+
+        elif stop is None:
             self.stop = lambda attempts, delay: any(f(attempts, delay) for f in stop_funcs)
 
         else:
@@ -147,7 +155,10 @@ class Retrying(object):
         if wait_exponential_multiplier is not None or wait_exponential_max is not None:
             wait_funcs.append(self.exponential_sleep)
 
-        if wait is None:
+        if wait_func is not None:
+            self.wait = wait_func
+
+        elif wait is None:
             self.wait = lambda attempts, delay: max(f(attempts, delay) for f in wait_funcs)
 
         else:
@@ -237,12 +248,17 @@ class Retrying(object):
 
             delay_since_first_attempt_ms = int(round(time.time() * 1000)) - start_time
             if self.stop(attempt_number, delay_since_first_attempt_ms):
-                raise RetryError(attempt)
+                if not self._wrap_exception and attempt.has_exception:
+                    # get() on an attempt with an exception should cause it to be raised, but raise just in case
+                    raise attempt.get()
+                else:
+                    raise RetryError(attempt)
             else:
                 sleep = self.wait(attempt_number, delay_since_first_attempt_ms)
                 time.sleep(sleep / 1000.0)
 
             attempt_number += 1
+
 
 class Attempt(object):
     """
@@ -275,6 +291,7 @@ class Attempt(object):
             return "Attempts: {0}, Error:\n{1}".format(self.attempt_number, "".join(traceback.format_tb(self.value[2])))
         else:
             return "Attempts: {0}, Value: {1}".format(self.attempt_number, self.value)
+
 
 class RetryError(Exception):
     """
