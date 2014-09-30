@@ -1,3 +1,10 @@
+python-retrying (1.2.3-2) unstable; urgency=medium
+
+  * Removed embedded copy of six using a patch from Chuck Short. Thanks to
+    James Page for letting me know.
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 30 Sep 2014 14:00:40 +0000
+
 python-retrying (1.2.3-1) unstable; urgency=medium
 
   * New upstream release.

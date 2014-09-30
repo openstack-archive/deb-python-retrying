@@ -11,6 +11,7 @@ Build-Depends: debhelper (>= 9),
                python-setuptools,
                python3-all,
                python3-setuptools
+Build-Depends-Indep: python-six, python3-six
 Standards-Version: 3.9.5
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=openstack/python-retrying.git
 Vcs-Git: git://anonscm.debian.org/openstack/python-retrying.git
@@ -19,7 +20,7 @@ Homepage: https://github.com/rholder/retrying
 Package: python-retrying
 Architecture: all
 Pre-Depends: dpkg (>= 1.15.6~)
-Depends: ${misc:Depends}, ${python:Depends}
+Depends: python-six, ${misc:Depends}, ${python:Depends}
 Description: simplifies the task of adding retry behavior - Python 2.x
  Retrying is an Apache 2.0 licensed general-purpose retrying library, written
  in Python, to simplify the task of adding retry behavior to just about
@@ -37,7 +38,7 @@ Description: simplifies the task of adding retry behavior - Python 2.x
 Package: python3-retrying
 Architecture: all
 Pre-Depends: dpkg (>= 1.15.6~)
-Depends: ${misc:Depends}, ${python3:Depends}
+Depends: python3-six, ${misc:Depends}, ${python3:Depends}
 Description: simplifies the task of adding retry behavior - Python 3.x
  Retrying is an Apache 2.0 licensed general-purpose retrying library, written
  in Python, to simplify the task of adding retry behavior to just about
