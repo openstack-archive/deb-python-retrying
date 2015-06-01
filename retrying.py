@@ -12,59 +12,12 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 
-## --- The following is for portions of the "six" module ----------------------
-##
-## Copyright (c) 2010-2014 Benjamin Peterson
-##
-## Permission is hereby granted, free of charge, to any person obtaining a copy
-## of this software and associated documentation files (the "Software"), to deal
-## in the Software without restriction, including without limitation the rights
-## to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-## copies of the Software, and to permit persons to whom the Software is
-## furnished to do so, subject to the following conditions:
-##
-## The above copyright notice and this permission notice shall be included in all
-## copies or substantial portions of the Software.
-##
-## THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-## IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-## FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-## AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-## LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-## OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-## SOFTWARE.
-## ----------------------------------------------------------------------------
-
 import random
+import six
 import sys
 import time
 import traceback
 
-# Python 3 compatibility hacks, pilfered from https://pypi.python.org/pypi/six/1.6.1
-PY3 = sys.version_info[0] == 3
-if PY3:
-    def reraise(tp, value, tb=None):
-        if value.__traceback__ is not tb:
-            raise value.with_traceback(tb)
-        raise value
-
-else:
-    def exec_(_code_, _globs_=None, _locs_=None):
-        """Execute code in a namespace."""
-        if _globs_ is None:
-            frame = sys._getframe(1)
-            _globs_ = frame.f_globals
-            if _locs_ is None:
-                _locs_ = frame.f_locals
-            del frame
-        elif _locs_ is None:
-            _locs_ = _globs_
-        exec("""exec _code_ in _globs_, _locs_""")
-
-
-    exec_("""def reraise(tp, value, tb=None):
-    raise tp, value, tb
-""")
 
 # sys.maxint / 2, since Python 3.2 doesn't have a sys.maxint...
 MAX_WAIT = 1073741823
@@ -79,6 +32,8 @@ def retry(*dargs, **dkw):
     # support both @retry and @retry() as valid syntax
     if len(dargs) == 1 and callable(dargs[0]):
         def wrap_simple(f):
+
+            @six.wraps(f)
             def wrapped_f(*args, **kw):
                 return Retrying().call(f, *args, **kw)
 
@@ -88,6 +43,8 @@ def retry(*dargs, **dkw):
 
     else:
         def wrap(f):
+
+            @six.wraps(f)
             def wrapped_f(*args, **kw):
                 return Retrying(*dargs, **dkw).call(f, *args, **kw)
 
@@ -110,7 +67,8 @@ class Retrying(object):
                  retry_on_result=None,
                  wrap_exception=False,
                  stop_func=None,
-                 wait_func=None):
+                 wait_func=None,
+                 wait_jitter_max=None):
 
         self._stop_max_attempt_number = 5 if stop_max_attempt_number is None else stop_max_attempt_number
         self._stop_max_delay = 100 if stop_max_delay is None else stop_max_delay
@@ -121,6 +79,7 @@ class Retrying(object):
         self._wait_incrementing_increment = 100 if wait_incrementing_increment is None else wait_incrementing_increment
         self._wait_exponential_multiplier = 1 if wait_exponential_multiplier is None else wait_exponential_multiplier
         self._wait_exponential_max = MAX_WAIT if wait_exponential_max is None else wait_exponential_max
+        self._wait_jitter_max = 0 if wait_jitter_max is None else wait_jitter_max
 
         # TODO add chaining of stop behaviors
         # stop behavior
@@ -255,6 +214,9 @@ class Retrying(object):
                     raise RetryError(attempt)
             else:
                 sleep = self.wait(attempt_number, delay_since_first_attempt_ms)
+                if self._wait_jitter_max:
+                    jitter = random.random() * self._wait_jitter_max
+                    sleep = sleep + max(0, jitter)
                 time.sleep(sleep / 1000.0)
 
             attempt_number += 1
@@ -282,7 +244,7 @@ class Attempt(object):
             if wrap_exception:
                 raise RetryError(self)
             else:
-                reraise(self.value[0], self.value[1], self.value[2])
+                six.reraise(self.value[0], self.value[1], self.value[2])
         else:
             return self.value
 
