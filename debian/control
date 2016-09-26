@@ -11,8 +11,8 @@ Build-Depends: debhelper (>= 9),
 Build-Depends-Indep: python-six,
                      python3-six,
 Standards-Version: 3.9.5
-Vcs-Browser: https://anonscm.debian.org/cgit/openstack/python-retrying.git/
-Vcs-Git: https://anonscm.debian.org/git/openstack/python-retrying.git
+Vcs-Browser: https://git.openstack.org/cgit/openstack/deb-python-retrying?h=debian%2Fnewton
+Vcs-Git: https://git.openstack.org/openstack/deb-python-retrying -b debian/newton
 Homepage: https://github.com/rholder/retrying
 
 Package: python-retrying
